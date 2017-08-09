@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace WebApplication
 {
-    class Program
+    class GMOOnlineApp
     {
         static IWebDriver wd = null;
         static IWebElement we = null;
@@ -20,12 +20,50 @@ namespace WebApplication
             openBrowser("chrome");
             homePage();
             onlineCataloguePage();
+            //onlineCatalogItemList();
             placeorderPage();
             billingInfoPage();
             onlineStoreReciept();
-            wd.Quit();
             Console.ReadKey(true);
+            Console.WriteLine("Enter a key to quit");
+            wd.Quit();
+           
             
+        }
+
+        private static void onlineCatalogItemList()
+        {
+            //IWebElement table = wd.FindElement(By.XPath("html/body/form/table/tbody/tr[2]/td/div/center/table/tbody"));
+            //int rows = table.FindElements(By.TagName("tr")).Count;
+
+            //Console.WriteLine(rows);
+            //for (int i=2; i<=rows; i++)
+            //{
+            //    IWebElement col2 = table.FindElement(By.XPath("tr[" + i + "]/ td[2]"));
+            //    Console.WriteLine(col2.Text);
+            //}
+
+            IList<IWebElement> col2List = wd.FindElements(By.XPath("html/body/form/table/tbody/tr[2]/td/div/center/table/tbody/tr/td[2]/a"));
+            int itemcount = col2List.Count;
+            for(int i=0; i<col2List.Count; i++)
+            {
+                IWebElement ele = col2List[i];
+                String itemName = ele.Text;
+                Console.WriteLine(itemName);
+                ele.Click();
+
+                if (wd.FindElement(By.XPath("html/body/h2[" + (i + 1) + "]/a")).Text.Equals(itemName))
+                {
+                    Console.WriteLine("Test Passed");
+                }
+                else
+                {
+                    Console.WriteLine("Test Failed");
+                }
+                wd.Navigate().Back();
+                col2List = wd.FindElements(By.XPath("html/body/form/table/tbody/tr[2]/td/div/center/table/tbody/tr/td[2]/a"));
+            }
+
         }
 
         private static void onlineStoreReciept()
@@ -44,15 +82,25 @@ namespace WebApplication
             // Get the page Title printed in console
             Console.WriteLine("Navigated to : " + wd.Title);
 
+
+            // Click on "Place The Order" button
+            wd.FindElement(By.Name("bSubmit")).Click();
+            if (alertPresent())
+            {
+                acceptAlertOnly();
+            }
+
             //Input the Bill To details
             wd.FindElement(By.Name("billName")).SendKeys("M D Sharma");
             wd.FindElement(By.Name("billAddress")).SendKeys(" Address Line 1");
             wd.FindElement(By.Name("billCity")).SendKeys("City 1");
             wd.FindElement(By.Name("billState")).SendKeys("State 2");
-            wd.FindElement(By.Name("billZipCode")).SendKeys("78945");
-            wd.FindElement(By.Name("billPhone")).SendKeys("9042450075");
             wd.FindElement(By.Name("billEmail")).SendKeys("abc@mail.com");
-           // selectCard();
+            //invalid set of data to input           
+            wd.FindElement(By.Name("billZipCode")).SendKeys("7894512");
+            wd.FindElement(By.Name("billPhone")).SendKeys("904245007512");
+
+            // selectCard();
             if (selectCard().Equals("Amex"))
             {
                 wd.FindElement(By.Name("CardNumber")).SendKeys("123456789123456");
@@ -61,16 +109,17 @@ namespace WebApplication
             {
                 wd.FindElement(By.Name("CardNumber")).SendKeys("1234567891234567");
             }
-            wd.FindElement(By.Name("CardDate")).SendKeys("12/20");
-
-            // Input the Ship To details
+            wd.FindElement(By.Name("CardDate")).SendKeys("121220");
+            //To ship details checkbox element
             we = wd.FindElement(By.Name("shipSameAsBill"));
-            String toShipChkbox = "unChecked";
-            if(toShipChkbox.Equals("Checked"))
+            // Input the Ship To details
+            //we = wd.FindElement(By.Name("shipSameAsBill"));
+            String toShipChkbox = "Checked";
+            if (toShipChkbox.Equals("Checked"))
             {
                 we.Click();
             }
-            
+
             if (we.Selected)
             {
                 Console.WriteLine("To Bill details are Same as To Ship details");
@@ -87,13 +136,48 @@ namespace WebApplication
 
                 saveScreenShot("billingInfo");
             }
-            
-
             // Click on "Place The Order" button
             wd.FindElement(By.Name("bSubmit")).Click();
 
+            while (alertPresent())
+            {
+                 if (acceptAlert().Contains("zip") ){
+                    wd.FindElement(By.Name("billZipCode")).SendKeys("78945");
+                }
+                // Click on "Place The Order" button
+                wd.FindElement(By.Name("bSubmit")).Click();
+                if (acceptAlert().Contains("phone")){
+                    wd.FindElement(By.Name("billPhone")).SendKeys("9042450075");
+                }
 
+                we.Click();
+                we.Click();
+                // Click on "Place The Order" button
+                wd.FindElement(By.Name("bSubmit")).Click();
 
+                //if (acceptAlert().Contains("card"))
+                //{
+                //    // selectCard();
+                //    if (selectCard().Equals("Amex"))
+                //    {
+                //        wd.FindElement(By.Name("CardNumber")).SendKeys("123456789123456");
+                //    }
+                //    else
+                //    {
+                //        wd.FindElement(By.Name("CardNumber")).SendKeys("1234567891234567");
+                //    }
+                //}
+                // Click on "Place The Order" button
+                //wd.FindElement(By.Name("bSubmit")).Click();
+                if (acceptAlert().Contains("date"))
+                {
+                    wd.FindElement(By.Name("CardDate")).SendKeys("12/20");
+                }
+                // Click on "Place The Order" button
+                wd.FindElement(By.Name("bSubmit")).Click();
+
+            }
+            
         }
 
         private static String selectCard()
@@ -122,11 +206,16 @@ namespace WebApplication
             Console.WriteLine("Navigated to : " + wd.Title);
             we = wd.FindElement(By.Name("QTY_TENTS"));
             we.Clear();
-            we.SendKeys("2");
-            IWebElement we1 = wd.FindElement(By.Name("QTY_BACKPACKS"));
-            we1.Clear();
-            we1.SendKeys("10");
-            saveScreenShot("onlineCatalogue");
+            we.SendKeys("0");
+            //saveScreenShot("onlineCataloguePreAlert");
+            wd.FindElement(By.XPath("//input[@value='Place An Order']")).Click();
+            while (alertPresent()) {
+                acceptAlertOnly();
+                we.Clear();
+                we.SendKeys("2");
+
+            }
+            saveScreenShot("onlineCataloguePostAlert");
             getTableData();
             wd.FindElement(By.XPath("//input[@value='Place An Order']")).Click();
             wd.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(5);
@@ -206,7 +295,7 @@ namespace WebApplication
                 throw new Exception("Browser not found");
             }
             wd.Manage().Window.Maximize();
-            wd.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(30);
+            wd.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
             wd.Navigate().GoToUrl("http://demo.borland.com/gmopost/");
             wd.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(5);
         }
@@ -223,6 +312,35 @@ namespace WebApplication
             fileName.Append(screenshotFirstName + DateTime.Now.ToString("-yyyy-mm-dd-HH_mm_ss")+".png");
             screenImage.SaveAsFile(fileName.ToString(), ScreenshotImageFormat.Png);
             Console.WriteLine("Screenshot is taken please check at : " + fileName);
+        }
+
+        private static bool alertPresent()
+        {
+            try
+            {
+                IAlert popup = wd.SwitchTo().Alert();
+                return true;
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Popup not present " + ex.Message);
+                return false;
+            }
+         
+        }
+
+        private static String acceptAlert()
+        {
+            IAlert popup = wd.SwitchTo().Alert();
+            String popuptext = popup.Text;
+            popup.Accept();
+            return popuptext;
+        }
+
+        private static void acceptAlertOnly()
+        {
+            IAlert popup = wd.SwitchTo().Alert();
+            popup.Accept();
         }
     }
 
