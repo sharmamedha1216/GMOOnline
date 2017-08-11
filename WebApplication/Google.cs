@@ -14,7 +14,7 @@ namespace WebApplication
             IWebDriver wd = new ChromeDriver("C:\\Users\\Admin.TRNROOM4-22\\Documents\\Visual Studio 2015\\Projects\\MD_SeleniumC#\\BrowserDrivers\\");
             wd.Manage().Window.Maximize();
             wd.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(5);
-            wd.Navigate().GoToUrl("https://www.google.co.in");
+            wd.Navigate().GoToUrl("http://www.google.co.in");
             wd.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(10);
 
             IWebElement textbox = wd.FindElement(By.Id("lst-ib"));

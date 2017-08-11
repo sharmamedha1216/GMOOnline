@@ -49,7 +49,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>WebApplication.StudyFrameCSharp</StartupObject>
+    <StartupObject>WebApplication.GMOOnline2DDF</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -69,9 +69,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Expedia.cs" />
+    <Compile Include="FirefoxProfiling.cs" />
+    <Compile Include="Flipkart.cs" />
+    <Compile Include="GMOOnline2DDF.cs" />
     <Compile Include="StudyFramesCsharpDoc.cs" />
     <Compile Include="Google.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="GMOOnline.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>

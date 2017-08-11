@@ -21,9 +21,9 @@ namespace WebApplication
             homePage();
             onlineCataloguePage();
             //onlineCatalogItemList();
-            placeorderPage();
-            billingInfoPage();
-            onlineStoreReciept();
+            //placeorderPage();
+            //billingInfoPage();
+            //onlineStoreReciept();
             Console.ReadKey(true);
             Console.WriteLine("Enter a key to quit");
             wd.Quit();
@@ -206,13 +206,15 @@ namespace WebApplication
             Console.WriteLine("Navigated to : " + wd.Title);
             we = wd.FindElement(By.Name("QTY_TENTS"));
             we.Clear();
-            we.SendKeys("0");
+            we.SendKeys("10");
+            resetOrderCatalog();
             //saveScreenShot("onlineCataloguePreAlert");
             wd.FindElement(By.XPath("//input[@value='Place An Order']")).Click();
             while (alertPresent()) {
                 acceptAlertOnly();
                 we.Clear();
                 we.SendKeys("2");
+                
 
             }
             saveScreenShot("onlineCataloguePostAlert");
@@ -329,7 +331,7 @@ namespace WebApplication
          
         }
 
-        private static String acceptAlert()
+        private static string acceptAlert()
         {
             IAlert popup = wd.SwitchTo().Alert();
             String popuptext = popup.Text;
@@ -342,6 +344,28 @@ namespace WebApplication
             IAlert popup = wd.SwitchTo().Alert();
             popup.Accept();
         }
-    }
+
+        private static void resetOrderCatalog()
+        {
+            IWebElement resetButton = wd.FindElement(By.XPath("//input[@name='bReset']"));
+            resetButton.Click();
+            IList <IWebElement> tablecolmn = wd.FindElements(By.XPath("html/body/form/table/tbody/tr[2]/td/div/center/table/tbody/tr/td[4]/h1/input"));
+            int count = 0;
+            foreach (IWebElement ordervalue in tablecolmn)
+            {
+                string noOfItems = ordervalue.GetAttribute("value");
+                if (noOfItems.Equals("0"))
+                {
+                    count++;
+                }
+
+            }
+            if (count == 6)
+            {
+                Console.WriteLine("Catalog was reset");
+            }
+        }
+           
+     }
 
 }
