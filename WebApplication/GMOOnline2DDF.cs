@@ -256,6 +256,33 @@ namespace WebApplication
             }
         }
 
+        private static void readfromDB(IWebDriver driver)
+        {
+            Console.WriteLine("Selenium data driven using DB");
+            string conStr = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source = F:\\Selenium\\Test\\msAccess.ext";
+            OleDbConnection con = new OleDbConnection(conStr);
+            con.Open();
+            OleDbCommand command = new OleDbCommand("SELECT * FROM gmoBillAddress", con);
+            OleDbDataReader dataReader = command.ExecuteReader();
+            int cols = dataReader.FieldCount;
+            string[] billAddress = new string[cols];
+            while (dataReader.Read())
+            {
+                for (int j=1, j < cols; j++)
+                {
+                    billAddress[j - 1] = dataReader[j].ToString();
+                    Console.WriteLine(billAddress[j - 1]);
+                }
+                gmoHome(driver);
+                gmoCatalog(driver);
+                gmoPlaceOrder(driver);
+                gmoBilling(driver, billAddress);
+                gmoReceipt(driver);
+            }
+            dataReader.Close();
+            command.Dispose();
+        }
+
     }
 
 

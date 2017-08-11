@@ -79,12 +79,12 @@ namespace EAGApplication
             element = driver.FindElement(By.Id("UserName"));
             //Console.Write("Enter User Name : ");
             //String username = Console.ReadLine();
-            element.SendKeys("Medha.Sharma");
+            element.SendKeys("*******");
 
             element = driver.FindElement(By.Id("Password"));
             //Console.Write("Enter valid password : ");
             //String passwd = Console.ReadLine();
-            element.SendKeys("H@nuli-1216");
+            element.SendKeys("*******");
             try {
             element = driver.FindElement(By.XPath("//input[@value='Sign In']"));
             element.Click();
